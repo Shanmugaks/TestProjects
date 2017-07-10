@@ -1,0 +1,68 @@
+
+CREATE (ee:Person { name: "Shanmuga", from: "Trichy", klout: 99 })
+
+MATCH (ee:Person) WHERE ee.name = "Shanmuga" RETURN ee;
+
+MATCH (n:Person) RETURN n LIMIT 100
+
+MATCH (ee:Person)-[:KNOWS]-(friends)
+WHERE ee.name = "Shanmuga" RETURN ee, friends
+
+
+MATCH (js:Person)-[:KNOWS]-(surfer)
+WHERE js.name = "Shanmuga" AND surfer.from = "Pichandarkovil"
+RETURN DISTINCT surfer
+
+----------
+SP
+------
+MATCH (js:Person)-[:KNOWS]-(surfer)
+WHERE js.name = "Allison" AND surfer.from = "Pichandarkovil"
+RETURN DISTINCT surfer
+
+----------
+No Records
+------
+
+MATCH (js:Person)-[*]-(surfer)
+WHERE js.name = "Allison" AND surfer.from = "Pichandarkovil"
+RETURN DISTINCT surfer
+
+----------
+SP
+------
+
+PROFILE MATCH (js:Person)-[:KNOWS]-()-[:KNOWS]-(surfer)
+WHERE js.name = "Shanmuga" AND surfer.hobby = "surfing"
+RETURN DISTINCT surfer
+
+
+
+{
+  "name": "Shanmuga",
+  "from": "Trichy",
+  "klout": 99
+}
+{
+  "learn": "surfing",
+  "name": "SP",
+  "from": "Pichandarkovil"
+}
+{
+  "name": "Suppa",
+  "from": "Covai",
+  "title": "author"
+}
+{
+  "name": "Rik",
+  "from": "Belgium",
+  "pet": "Orval"
+}
+{
+  "name": "Allison",
+  "from": "California",
+  "hobby": "surfing"
+}
+
+
+
