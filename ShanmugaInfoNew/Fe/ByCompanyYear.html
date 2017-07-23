@@ -1,0 +1,48 @@
+﻿
+<html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['timeline'] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var container = document.getElementById('timeline');
+            var chart = new google.visualization.Timeline(container);
+            var dataTable = new google.visualization.DataTable();
+
+            dataTable.addColumn({ type: 'string', id: 'Company' });
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+            dataTable.addRows([
+              ['Cyient', new Date(2005, 5, 30), new Date(2007, 6, 30)],
+              ['Siemens', new Date(2007, 7, 4), new Date(2013, 8, 12)],
+              ['EMC', new Date(2013, 8, 15), new Date(2016, 2, 28)]]);
+
+            chart.draw(dataTable);
+        }
+        $(window).resize(function () {
+            drawChart();
+        });
+
+    </script>
+    <style>
+        .chart {
+  width: 100%; 
+  min-height: 180px;
+}
+    </style>
+</head>
+<body>
+   
+
+    <div class="row">
+        <div class="clearfix"></div>
+        <div class="col-md-12">
+            <div id="timeline" class="chart"></div>
+        </div>
+       
+    </div>
+
+</body>
+</html>

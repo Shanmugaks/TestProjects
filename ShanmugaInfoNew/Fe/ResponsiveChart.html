@@ -1,0 +1,57 @@
+﻿
+<html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+            var data = google.visualization.arrayToDataTable([
+              ['OS', 'Months'],
+              ['Microsoft Windows', 120],
+              ['Mac-OS', 36],
+              ['Microsoft Windows-Azure', 16],
+              ['Hp-Unix', 8],
+              ['SunSolaris', 8],
+              ['Cent-OS', 10],
+              ['Ubuntu', 8],
+              ['Amazon-AWS', 6]
+            ]);
+
+            var options = {
+                title: 'Shanmuga - Operating System experience'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+            chart.draw(data, options);
+        }
+        $(window).resize(function () {
+            drawChart();
+        });
+
+    </script>
+    <style>
+        .chart {
+            width: 100%;
+            min-height: 500px;
+            min-width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="row">
+        <div class="clearfix"></div>
+        <div class="col-md-12">
+            <div id="piechart" class="chart"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>
