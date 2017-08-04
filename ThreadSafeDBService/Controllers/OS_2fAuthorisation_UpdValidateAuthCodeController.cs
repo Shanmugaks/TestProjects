@@ -7,16 +7,60 @@ using System.Data;
 
 namespace ThreadSafeDBService.Controllers
 {
+
+    public static class Synchronizer
+    {
+        static public readonly object sharedLockObject = new object();
+    }
     /// <summary>
     /// Description for ThreadSafeOutProcessController.
     /// </summary>
     public class OS_2fAuthorisation_UpdValidateAuthCodeController : ApiController
     {
-        protected string ConnectionString;
-        protected string MutexName;
-        protected string ProcName;
+        static protected string MutexName = "Global\\" + "ThreadSafeDBService" + "ALL";
+        static protected string ProcName = "OS_2fAuthorisation_UpdValidateAuthCode_ThreadSafe";
+        static protected string ConnectionString = "data source=MSLDEVSQL03;initial catalog=MMSGCommon;Integrated Security=true;";
+      
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
+
+        public IHttpActionResult Post(int iSystemID, int iCallingContext, string sAccountID, string sMobileNo, string sAuthorisationCode, int iExpiryMinutes)
+        {
+            IHttpActionResult Result = Ok("Success");
+            Console.WriteLine("SyncAllController - START({0})", Thread.CurrentThread.ManagedThreadId);        
+            try
+            {
+                lock (Synchronizer.sharedLockObject)
+                {
+                    using (SqlConnection ConnectionObject = new SqlConnection(ConnectionString))
+                    {
+                        using (SqlCommand Sqlcommand = new SqlCommand(ProcName, ConnectionObject))
+                        {
+                            Sqlcommand.CommandType = CommandType.StoredProcedure;
+                            Sqlcommand.Parameters.Add("@iSystemID", SqlDbType.Int).Value = iSystemID;
+                            Sqlcommand.Parameters.Add("@iCallingContext", SqlDbType.Int).Value = iCallingContext;
+                            Sqlcommand.Parameters.Add("@sAccountID", SqlDbType.VarChar, 255).Value = sAccountID;
+                            Sqlcommand.Parameters.Add("@sMobileNo", SqlDbType.VarChar, 20).Value = sMobileNo;
+                            Sqlcommand.Parameters.Add("@sAuthorisationCode", SqlDbType.VarChar, 128).Value = sAuthorisationCode;
+                            Sqlcommand.Parameters.Add("@iExpiryMinutes", SqlDbType.Int).Value = iExpiryMinutes;
+                            ConnectionObject.Open();
+                            Sqlcommand.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("SyncAllController - CATCH START({0})", Thread.CurrentThread.ManagedThreadId);
+                Result = InternalServerError(e);
+                Console.WriteLine("SyncAllController - CATCH END({0})", Thread.CurrentThread.ManagedThreadId);
+            }
+            Console.WriteLine("SyncAllController - END({0})", Thread.CurrentThread.ManagedThreadId);
+            return Result;
+        }
+
+        /*
         public IHttpActionResult Post(int iSystemID, int iCallingContext, string sAccountID, string sMobileNo, string sAuthorisationCode, int iExpiryMinutes)
         {
             IHttpActionResult Result = Ok("Success");
@@ -24,11 +68,6 @@ namespace ThreadSafeDBService.Controllers
             try
             {
                 Console.WriteLine("SyncAllController - TRY START({0})", Thread.CurrentThread.ManagedThreadId);
-
-                MutexName = "Global\\" + "ThreadSafeDBService" + "ALL";
-                ProcName = "OS_2fAuthorisation_UpdValidateAuthCode";
-                ConnectionString = "data source=SHANMUGAPC\\SQLEXPRESS;initial catalog=ShanDB;Integrated Security=true;";
-
                 // create a global mutex
                 using (var mutex = new Mutex(false, MutexName))
                 {
@@ -85,6 +124,31 @@ namespace ThreadSafeDBService.Controllers
                 Result = InternalServerError(e);
                 Console.WriteLine("SyncAllController - CATCH END({0})", Thread.CurrentThread.ManagedThreadId);
             }
+            Console.WriteLine("SyncAllController - END({0})", Thread.CurrentThread.ManagedThreadId);
+            return Result;
+        }
+        */
+
+        public IHttpActionResult Get(int iSystemID, int iCallingContext, string sAccountID, string sMobileNo, string sAuthorisationCode, int iExpiryMinutes)
+        {
+            Console.WriteLine("SyncAllController - START({0})", Thread.CurrentThread.ManagedThreadId);
+            IHttpActionResult Result = Ok("Success - UPDATE");
+            try
+            {
+                Console.WriteLine("SyncAllController - TRY START({0})", Thread.CurrentThread.ManagedThreadId);               
+                lock (Synchronizer.sharedLockObject)
+                {
+                    Thread.Sleep(5000);
+                }
+                Console.WriteLine("SyncAllController - TRY END({0})", Thread.CurrentThread.ManagedThreadId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("SyncAllController - CATCH START({0})", Thread.CurrentThread.ManagedThreadId);
+                Result = InternalServerError(e);
+                Console.WriteLine("SyncAllController - CATCH END({0})", Thread.CurrentThread.ManagedThreadId);
+            }
+
             Console.WriteLine("SyncAllController - END({0})", Thread.CurrentThread.ManagedThreadId);
             return Result;
         }
