@@ -1,0 +1,6 @@
+.NET Microservices. Architecture for Containerized .NET Applications:
+https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/
+
+Pattern: Microservice Architecture:
+
+http://microservices.io/patterns/microservices.html
